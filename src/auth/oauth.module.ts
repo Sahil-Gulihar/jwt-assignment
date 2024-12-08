@@ -21,11 +21,6 @@ import { JwtStrategy } from './jwt.strategy';
     }),
   ],
   controllers: [AuthController, OAuthController],
-  providers: [
-    AuthService,
-    GoogleStrategy,
-    LinkedInStrategy,
-    JwtStrategy,
-  ],
+  providers: [AuthService, GoogleStrategy, LinkedInStrategy, JwtStrategy],
 })
 export class AuthModule {}

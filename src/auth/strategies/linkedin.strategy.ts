@@ -5,7 +5,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from 'src/users/user.entity';
 
-
 @Injectable()
 export class LinkedInStrategy extends PassportStrategy(Strategy, 'linkedin') {
   constructor(
@@ -15,7 +14,7 @@ export class LinkedInStrategy extends PassportStrategy(Strategy, 'linkedin') {
     super({
       clientID: process.env.LINKEDIN_CLIENT_ID,
       clientSecret: process.env.LINKEDIN_CLIENT_SECRET,
-      callbackURL: `${process.env.FRONTEND_URL}/auth/linkedin/callback`,
+      callbackURL: `${process.env.BACKEND_URL}/auth/linkedin/callback`,
       scope: ['r_emailaddress', 'r_liteprofile'],
       passReqToCallback: true,
     });
@@ -23,29 +22,27 @@ export class LinkedInStrategy extends PassportStrategy(Strategy, 'linkedin') {
 
   async validate(
     req: any,
-    accessToken: string, 
-    refreshToken: string, 
-    profile: any, 
-    done: any
+    accessToken: string,
+    refreshToken: string,
+    profile: any,
+    done: any,
   ): Promise<any> {
     const { id, emails, name } = profile;
-    
-    // Check if user already exists
-    let user = await this.userRepository.findOne({ 
-      where: { 
+
+    let user = await this.userRepository.findOne({
+      where: {
         linkedInId: id,
-        email: emails[0].value 
-      } 
+        email: emails[0].value,
+      },
     });
 
-    // If user doesn't exist, create new user
     if (!user) {
       user = this.userRepository.create({
         linkedInId: id,
         email: emails[0].value,
         firstName: name.givenName,
         lastName: name.familyName,
-        isOAuthUser: true
+        isOAuthUser: true,
       });
 
       await this.userRepository.save(user);
